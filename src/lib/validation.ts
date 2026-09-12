@@ -1,0 +1,5 @@
+import { z } from "zod";
+export const registerSchema = z.object({ name:z.string().trim().min(2).max(80), email:z.email().toLowerCase(), password:z.string().min(10).max(128), organization:z.string().trim().min(2).max(100) });
+export const loginSchema = z.object({ email:z.email().toLowerCase(), password:z.string().min(1).max(128) });
+export const campaignSchema = z.object({ name:z.string().min(2).max(100), businessId:z.string().min(1), locationId:z.string().min(1), type:z.string().min(2).max(30), slug:z.string().regex(/^[a-z0-9-]{4,64}$/).optional() });
+export const reviewDraftSchema = z.object({ campaignId:z.string(), sessionId:z.string(), score:z.number().int().min(1).max(5), tags:z.array(z.string().max(40)).max(10), comment:z.string().max(1500).optional(), language:z.enum(["English","Hindi","Hinglish","Auto Detect"]), tone:z.enum(["Natural","Professional","Friendly","Short","Detailed"]), length:z.enum(["Short","Medium","Detailed"]) }).refine(v=>v.tags.length>0 || !!v.comment?.trim(), {message:"Share at least one genuine experience detail."});

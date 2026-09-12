@@ -1,0 +1,1 @@
+import Link from"next/link";export default function Page(){return <main className="auth card"><h2>Forbidden</h2><p className="muted">You do not currently have access to this resource.</p><Link className="button" href="/dashboard">Back to dashboard</Link></main>}

@@ -1,0 +1,9 @@
+node_modules/
+.next/
+.env
+.env.local
+logs/
+backups/
+uploads/private/
+coverage/
+*.log
