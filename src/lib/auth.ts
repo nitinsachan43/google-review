@@ -9,7 +9,8 @@ export async function currentSession() {
     const session = await verifySession(token);
     const membership = await db.tenantUser.findUnique({ where: { tenantId_userId: { tenantId: session.tenantId, userId: session.userId } }, include: { user: true, tenant: true } });
     if (!membership?.user.active || membership.tenant.status !== "ACTIVE") return null;
-    return { ...session, membership };
+    // JWT identity selects the membership; live database state is authoritative for RBAC.
+    return { ...session, role: membership.role, membership };
   } catch { return null; }
 }
 export async function requireSession() { const s = await currentSession(); if (!s) redirect("/login"); return s; }

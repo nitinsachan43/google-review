@@ -3,7 +3,22 @@ import { SignJWT, jwtVerify } from "jose";
 import type { TenantRole } from "@prisma/client";
 
 export const SESSION_COOKIE = "reviewai_session";
-const secret = () => new TextEncoder().encode(process.env.AUTH_SECRET || "development-only-change-me-32-characters");
+const developmentSecret = "development-only-change-me-32-characters";
+
+if (process.env.NODE_ENV === "production" && !process.env.AUTH_SECRET) {
+  throw new Error("AUTH_SECRET is required in production");
+}
+
+export function authSecret() {
+  const configured = process.env.AUTH_SECRET;
+  if (configured) return configured;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("AUTH_SECRET is required in production");
+  }
+  return developmentSecret;
+}
+
+const secret = () => new TextEncoder().encode(authSecret());
 export async function signSession(data: { userId: string; tenantId: string; role: TenantRole }) {
   return new SignJWT(data).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime("7d").sign(secret());
 }
@@ -19,4 +34,4 @@ export function verifyWebhook(body: string, signature: string | null, secret: st
   const a = Buffer.from(expected); const b = Buffer.from(signature);
   return a.length === b.length && timingSafeEqual(a, b);
 }
-export function anonymizeIp(ip: string) { return createHash("sha256").update(ip + (process.env.AUTH_SECRET || "salt")).digest("hex").slice(0, 24); }
+export function anonymizeIp(ip: string) { return createHash("sha256").update(ip + authSecret()).digest("hex").slice(0, 24); }
