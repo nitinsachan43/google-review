@@ -1,0 +1,1 @@
+import{NextResponse}from"next/server";import{verifyWebhook}from"@/lib/security";export async function POST(req:Request){const body=await req.text();if(!verifyWebhook(body,req.headers.get("x-razorpay-signature"),process.env.RAZORPAY_WEBHOOK_SECRET||""))return NextResponse.json({error:"Invalid signature"},{status:401});return NextResponse.json({received:true})}

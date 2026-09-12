@@ -1,0 +1,1 @@
+"use client";export default function ErrorPage({reset}:{reset:()=>void}){return <main className="auth card"><h2>Something went wrong</h2><p className="muted">Your data is safe. Please try again.</p><button onClick={reset}>Try again</button></main>}
